@@ -1,0 +1,11 @@
+---
+access_sw_1:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.2
+core_sw:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.3

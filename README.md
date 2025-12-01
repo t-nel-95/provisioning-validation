@@ -1,101 +1,81 @@
-# 🚀 Project: Ansible Network Validation & Provisioning Audit (NETVAL)
+# Provisioning Validation Lab
 
-## Introduction
+This repository contains the necessary files and scripts to deploy a simple two-node network topology using **Containerlab**, build a custom Docker image for the nodes, establish secure SSH access via key exchange, and validate the setup using **Ansible**.
 
-This project demonstrates expertise in **network provisioning, configuration management, and test automation** using **Ansible** and a **Docker-based** network emulation environment (Arista cEOS).
+## Prerequisites
 
-The core goal is to deploy a new VLAN configuration across simulated switches and then rigorously validate the operational state to ensure the network is configured exactly as intended.
+Ensure you have the following software installed and configured:
 
----
+1. **Docker:** Required for running containerized network nodes.
 
-## 🎯 Technical Showcase
+2. **Containerlab (`clab`):** Required for deploying the network topology defined in `netval-topo.clab.yml`.
 
-This repository is built to demonstrate competence in the following areas crucial for a Test Automation Engineer:
+3. **Ansible:** Required for provisioning the nodes using `ansible-playbook`.
 
-* **Test-Driven Automation:** Clear separation of provisioning logic (`1_provision_vlan.yml`) from validation logic (`2_validate_vlan.yml`).
-* **State Validation:** Using the **`ansible.builtin.assert`** module to check the *operational state* of the network, not just the configuration file.
-* **Idempotency:** Using Ansible network modules to ensure configurations are only applied when necessary (`changed=0` on repeated runs).
-* **Modular Design:** Utilizing Ansible **Roles** (`network_setup`) to create reusable and maintainable configuration and testing logic.
-* **Environment as Code (EaC):** Utilizing **Docker Compose** to create a self-contained, repeatable, and portable virtual network topology.
+4. **OpenSSH Client Utilities:** Specifically, the `ssh-copy-id` utility must be available on your host system.
 
----
+## Project Files
 
-## ⚙️ How to Run the Demo
+| **File** | **Description** | 
+|---|---|
+| `Dockerfile` | Defines the `ubuntu-ansible-node:latest` image, including Python, netaddr, SSH server, and setting the root password to 'ansible'. | 
+| `netval-topo.clab.yml` | Containerlab topology definition creating two nodes: `core_sw` and `access_sw_1`. | 
+| `inventory.yaml` | Ansible inventory defining the IP addresses and credentials for the lab nodes. | 
+| `playbook.yaml` | The main Ansible playbook used to run configurations or tests on the lab nodes. | 
+| `docker_build.sh` | Shell script to build the custom Docker image. | 
+| `lab_up.sh` | Shell script to deploy the Containerlab topology. | 
+| `setup_ssh.sh` | **CRITICAL:** Generates an SSH key pair (`id_rsa_netval`) and installs the public key on the remote nodes using `ssh-copy-id`. | 
+| `ansible_run.sh` | Shell script to execute the main Ansible playbook. |
+| `lab_down.sh` | Shell script to destroy the Containerlab topology and clean up resources. |
 
-### Prerequisites
+## Quick Start Workflow
 
-To run this demo, you must have the following installed locally:
+Follow these steps sequentially to deploy the lab, set up SSH, and run the Ansible playbook.
 
-1.  **Docker & Docker Compose**
-2.  **Python 3.x**
-3.  **Ansible:** Installed via `pipx` (recommended) or `pip`.
-4.  **Network Collection:** The Ansible collection for Arista EOS is required:
-    ```bash
-    ansible-galaxy collection install arista.eos
-    ```
-
-### Step 1: Start the Virtual Network
-
-Navigate to the project root directory and start the two cEOS containers defined in `docker-compose.yml`.
+Start by changing to the `provision` directory:
 
 ```bash
-docker compose up -d
+cd provision
 ```
 
-Wait 30-60 seconds for the network operating systems (NOS) to boot and the SSH service to start.
+### Step 1: Build the Custom Docker Image
 
-### Step 2: Verify Initial Connectivity
-
-Run a simple Ansible command to ensure the controller can connect to the Docker containers via the mapped ports (`2200` and `2201`).
+This step creates the `ubuntu-ansible-node:latest` image required by the Containerlab topology.
 
 ```bash
-ansible all -i inventory/hosts.yml -m arista.eos.eos_facts -a "gather_subset=hardware"
+./docker_build.sh
 ```
 
-### Step 3: Provision the VLAN (The Action)
+### Step 2: Deploy the Containerlab Topology
 
-Run the provisioning playbook. By default, this creates VLAN 100 and assigns it to the access ports, using the parameters defined in `group_vars/all.yml`.
+This step starts the two containers and creates the network link between them. This command requires `sudo`.
 
 ```bash
-ansible-playbook -i inventory/hosts.yml playbooks/1_provision_vlan.yml
+sudo ./lab_up.sh
 ```
 
-### Step 4: Validate the Configuration (The Test)
+### Step 3: Configure SSH Key-Based Access
 
-Run the test automation playbook. This playbook executes network commands, gathers structured output, and uses assertions to verify the presence, correct naming, and port assignment of the new VLAN.
+This script generates a new, passwordless RSA key pair (`id_rsa_netval`) and uses `ssh-copy-id` to install the public key on both remote nodes.
+
+**Note:** You will be prompted to enter the **remote user's password** (`ansible`) for each host on this first run.
 
 ```bash
-ansible-playbook -i inventory/hosts.yml playbooks/2_validate_vlan.yml
+./setup_ssh.sh
 ```
 
-**Testing Idempotency**: If you run the provisioning playbook (Step 3) again, it should report changed=0 for all tasks, demonstrating that the network state was already correct.
+### Step 4: Run the Ansible Playbook
 
-### Step 5: Clean Up
-
-When finished, shut down the network containers and remove the custom bridge network:
+Once key access is set up, you can execute your provisioning logic defined in `playbook.yaml`.
 
 ```bash
-docker compose down
+./ansible_run.sh
 ```
 
-## 📂 Project Structure
+## Cleanup
 
-```
-netval/
-├── docker-compose.yml              # Defines 2 cEOS switches and custom network topology.
-├── .gitignore                      # Excludes Venvs, logs, and sensitive files.
-├── inventory/
-│   └── hosts.yml                   # Defines target hosts (127.0.0.1:22XX) and connection details.
-├── group_vars/
-│   └── all.yml                     # Centralizes all changeable parameters (vlan_id: 100, vlan_name, credentials).
-├── playbooks/
-│   ├── 1_provision_vlan.yml        # High-level playbook: Calls the 'network_setup/provision' role tasks.
-│   └── 2_validate_vlan.yml         # High-level playbook: Calls the 'network_setup/validate' role tasks.
-└── roles/
-    └── network_setup/              # The core, reusable automation logic.
-        ├── tasks/
-        │   ├── provision.yml       # VLAN creation and interface config tasks (tagged: 'provision').
-        │   └── validate.yml        # Fact gathering and ASSERTION tasks (tagged: 'validate').
-        └── handlers/
-            └── main.yml            # Task to save the running configuration.
+When you are finished with the lab, use the following command to stop and remove all containers and associated network bridges created by Containerlab. This command requires `sudo`.
+
+```bash
+sudo ./lab_down.sh
 ```
