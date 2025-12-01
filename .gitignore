@@ -20,6 +20,11 @@ clab-netval-topo/*
 
 # Secrets and Private Keys
 # Example: custom SSH key for the demo:
-id_rsa_netval
+id_rsa_netval*
 *.key
 *.pem
+
+# Robot Framework Output
+output.xml
+report.html
+log.html

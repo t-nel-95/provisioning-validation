@@ -1,6 +1,13 @@
 - name: My first play
   hosts: myhosts
   tasks:
+   - name: Ensure ping utility is installed
+     ansible.builtin.apt:
+       name: iputils-ping
+       state: present
+       update_cache: yes
+     become: yes
+
    - name: Ping my hosts
      ansible.builtin.ping:
 
