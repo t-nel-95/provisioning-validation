@@ -1,0 +1,17 @@
+# File: netval-topo.clab.yml
+name: netval-topo
+
+topology:
+  nodes:
+    # 1. CORE SWITCH Node
+    core_sw:
+      kind: linux
+      image: ubuntu-ansible-node:latest
+      
+    # 2. ACCESS SWITCH 1 Node
+    access_sw_1:
+      kind: linux
+      image: ubuntu-ansible-node:latest
+      
+  links:
+    - endpoints: ["core_sw:eth1", "access_sw_1:eth1"]

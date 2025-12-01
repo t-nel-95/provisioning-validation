@@ -1,0 +1,25 @@
+# Python Virtual Environments
+.venv/
+venv/
+__pycache__/
+
+# Ansible Specific
+# Generally use Ansible Vault, but ignore temporary files anyway
+.ansible/
+*.retry
+*.log
+
+# Operating System Files (Mac, Windows)
+.DS_Store
+Thumbs.db
+
+# Docker-related files
+# Ignore temporary volumes/data created by your network containers
+# Note: only commit the docker-compose.yml file.
+clab-netval-topo/*
+
+# Secrets and Private Keys
+# Example: custom SSH key for the demo:
+id_rsa_netval
+*.key
+*.pem
