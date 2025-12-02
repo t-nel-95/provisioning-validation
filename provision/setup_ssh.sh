@@ -18,9 +18,11 @@ IP="127.0.0.1"
 for NAME in "${!HOSTS[@]}"; do
     PORT=${HOSTS[$NAME]}
     echo "--- Installing key on ${NAME} (${USER}@${IP}:${PORT}) ---"
-    # ssh-copy-id will use your default public key (~/.ssh/id_ed25519.pub)
+    # Explicitly specify the public key to copy.
+    # Ensure that ~/.ssh/id_ed25519.pub exists and corresponds to the private key used in Robot Framework.
     # It will prompt for the password 'ansible'
-    ssh-copy-id -p "${PORT}" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${USER}@${IP}"
+    # If you use a different key (e.g., id_rsa), change 'id_ed25519' below to 'id_rsa'.
+    ssh-copy-id -i ~/.ssh/id_ed25519.pub -p "${PORT}" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${USER}@${IP}"
 
     if [ $? -eq 0 ]; then
         echo "Successfully installed key on ${NAME}."
