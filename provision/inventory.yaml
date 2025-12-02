@@ -1,8 +1,0 @@
-myhosts:
-  hosts:
-    clab-netval-topo-access_sw_1:
-      ansible_host: 172.20.20.2
-    clab-netval-topo-core_sw:
-      ansible_host: 172.20.20.3
-  vars:
-    ansible_user: root

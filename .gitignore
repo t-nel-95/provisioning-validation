@@ -16,7 +16,7 @@ Thumbs.db
 # Docker-related files
 # Ignore temporary volumes/data created by your network containers
 # Note: only commit the docker-compose.yml file.
-clab-netval-topo/*
+provision/clab-netval-topo/*
 
 # Secrets and Private Keys
 # Example: custom SSH key for the demo:

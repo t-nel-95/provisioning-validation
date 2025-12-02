@@ -1,12 +1,17 @@
 - name: My first play
-  hosts: myhosts
+  hosts: switches
+  vars:
+    # --- Self-Contained Ansible Connection Settings ---
+    # 1. Tell Ansible which user to connect as.
+    ansible_user: root
+    # Prevent Ansible from asking about the host key fingerprint on first connect.
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
   tasks:
    - name: Ensure ping utility is installed
      ansible.builtin.apt:
        name: iputils-ping
        state: present
        update_cache: yes
-     become: yes
 
    - name: Ping my hosts
      ansible.builtin.ping:

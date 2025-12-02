@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  core_sw:
+    build: . # Build from the Dockerfile in the current directory
+    hostname: core_sw
+    networks:
+      - netval_net
+    ports:
+      # Map host port 2222 to container port 22
+      - "2222:22"
+
+  access_sw_1:
+    build: . # Build from the Dockerfile in the current directory
+    hostname: access_sw_1
+    networks:
+      - netval_net
+    ports:
+      # Map host port 2223 to container port 22
+      - "2223:22"
+
+networks:
+  netval_net:
+    driver: bridge
+    # This allows us to get the container IPs for our Ansible inventory
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24

@@ -1,2 +1,3 @@
 #!/bin/bash
-ansible-playbook -i inventory.yaml playbook.yaml
+# Use our new static inventory file.
+ansible-playbook -i inventory.ini playbook.yaml

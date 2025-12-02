@@ -10,12 +10,17 @@ RUN apt-get update && \
 
 # Set up SSH credentials and access
 RUN mkdir /var/run/sshd
-# Set password for the 'root' user to 'ansible'
+# Create the .ssh directory for the root user to hold authorized_keys
+RUN mkdir -p /root/.ssh
+
+# Set a temporary password ('ansible') for the 'root' user.
 RUN echo 'root:ansible' | chpasswd
-# Allow root login via SSH password
+# Allow root login via SSH password.
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
 # Do not require DNS lookup (speeds up connection)
 RUN echo "UseDNS no" >> /etc/ssh/sshd_config
 EXPOSE 22
 # Start the SSH service when the container launches
+# The CMD is now simpler as it only needs to start the SSH server.
 CMD ["/usr/sbin/sshd", "-D"]

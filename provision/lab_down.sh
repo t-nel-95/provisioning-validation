@@ -1,2 +1,2 @@
 #!/bin/bash
-containerlab destroy -t netval-topo.clab.yml
+docker compose down

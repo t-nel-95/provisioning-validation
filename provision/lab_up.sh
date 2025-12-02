@@ -1,2 +1,2 @@
 #!/bin/bash
-containerlab deploy -t netval-topo.clab.yml
+docker compose up -d --build

@@ -3,14 +3,13 @@ Documentation    Test to verify that the access switch can successfully ping the
 Library          SSHLibrary
 
 *** Variables ***
-# Credentials for the access switch container (clab-netval-topo-access_sw_1)
-${ACCESS_SW_HOST}      clab-netval-topo-access_sw_1
-${SSH_USERNAME}        root
-${SSH_PASSWORD}        ansible
+# Credentials for the access switch container
+${ACCESS_SW_HOST}      access_sw_1
+${SSH_USERNAME}        root  # The user is still 'root'
 ${SSH_PORT}            22
 
-# Target to be pinged (the core switch)
-${CORE_SW_TARGET}      clab-netval-topo-core_sw
+# Target to be pinged
+${CORE_SW_TARGET}      core_sw
 
 *** Test Cases ***
 Access Switch Pings Core Switch Successfully
@@ -19,7 +18,9 @@ Access Switch Pings Core Switch Successfully
 
     ## 1. Connect to the Access Switch ##
     Open Connection    ${ACCESS_SW_HOST}    port=${SSH_PORT}
-    Login    ${SSH_USERNAME}    ${SSH_PASSWORD}
+    # Use the default SSH key from the SSH agent or ~/.ssh/
+    # The user must be specified as it's not the same as the local user.
+    Login    ${SSH_USERNAME}
 
     ## 2. Execute Ping Command ##
     # We will run a ping with a limited count (e.g., 3 packets)
