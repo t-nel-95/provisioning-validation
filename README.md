@@ -89,7 +89,7 @@ robot successful_ping_test.robot
 
 ## Cleanup
 
-When you are finished with the lab, use the following command to stop and remove all containers and associated network bridges created by Containerlab. This command requires `sudo`.
+When you are finished with the lab, use the following command to stop and remove all containers and associated network bridges created by Docker Compose.
 
 ```bash
 cd ../provision
