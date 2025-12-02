@@ -34,7 +34,7 @@ Follow these steps sequentially to deploy the lab, set up SSH, and run the Ansib
 
 ### Step 1: Build the Custom Docker Image
 
-This step creates the `ubuntu-ansible-node:latest` image required by the Containerlab topology.
+This step creates the `ubuntu-ansible-node:latest` image required by the Docker Compose.
 
 ```bash
 cd provision
